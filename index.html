@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>合成鸡哥</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box !important;
+      }
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+      .box {
+        height: 100%;
+        width: 100%;
+        background-color: #333;
+        position: relative;
+        overflow: hidden;
+        background-position: center;
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+      .chicken,
+      .basketball,
+      .cxkbox {
+        position: absolute;
+        background-position: center;
+        background-size: cover;
+      }
+      .chicken {
+        text-align: center;
+        line-height: 150px;
+        color: black;
+        width: 150px;
+        height: 150px;
+      }
+      .basketball {
+        text-align: center;
+        line-height: 80px;
+        color: black;
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+      }
+      .cxkbox {
+        text-align: center;
+        line-height: 100px;
+        color: black;
+        width: 200px;
+        height: 250px;
+      }
+      .hover_btn {
+        position: fixed;
+        top: 0;
+        left: -220px;
+        z-index: 999;
+        height: 150px;
+        width: 250px;
+        background-color: rgba(255, 255, 255, 0.5);
+        border-bottom-right-radius: 5px;
+        cursor: pointer;
+        transition: left 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .hover_btn:hover {
+        left: 0;
+      }
+      .hover_btn button {
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px;
+        margin: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+      }
+      .hover_btn button:hover {
+        background-color: white;
+        color: #333;
+      }
+      .change_bg_box {
+        display: none;
+        opacity: 0;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 50%;
+        height: 50%;
+        background-color: white;
+        z-index: 999;
+        transition: all 0.2s ease-in-out;
+        border-radius: 10px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.5);
+        overflow: hidden;
+      }
+      .scroll-box {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        overflow: auto;
+        padding: 10px 20px;
+        scrollbar-width: thin;
+        scrollbar-color: #333 #999;
+      }
+      .scroll-box::-webkit-scrollbar {
+        width: 8px;
+      }
+      .scroll-box::-webkit-scrollbar-track {
+        background-color: #999;
+      }
+      .scroll-box::-webkit-scrollbar-thumb {
+        background-color: #333;
+        border-radius: 20px;
+        border: 3px solid #999;
+      }
+      .close_btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 999;
+        background-color: #333;
+        color: white;
+        border: none;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+        outline: none;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        transition: all 0.2s ease-in-out;
+      }
+      .close_btn:hover {
+        background-color: white;
+        color: #333;
+      }
+      .change_bg_box .scene {
+        height: 100%;
+        min-width: 100%;
+        margin-right: 20px;
+        position: relative;
+      }
+      .change_bg_box .scene .scene_name {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: 10px;
+        color: white;
+        font-size: 24px;
+        text-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 10px;
+        border-radius: 5px;
+        cursor: default；;
+      }
+      .change_bg_box .scene:last-child {
+        margin-right: 0;
+      }
+      .change_bg_box .scene img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .cxk_list {
+        display: none;
+        opacity: 0;
+        position: fixed;
+        z-index: 999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 50%;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.2s ease-in-out;
+      }
+      .cxk_list .sort_cxk {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        overflow: auto;
+        padding: 10px 20px;
+      }
+      .cxk_list .sort_cxk::-webkit-scrollbar {
+        width: 8px;
+      }
+      .cxk_list .sort_cxk::-webkit-scrollbar-track {
+        background-color: #999;
+      }
+      .cxk_list .sort_cxk::-webkit-scrollbar-thumb {
+        background-color: #333;
+        border-radius: 20px;
+        border: 3px solid #999;
+      }
+
+      .cxk_list .sort_cxk .cxk_item {
+        min-width: 250px;
+        height: 100%;
+        background-color: #333;
+        background-position: center;
+        background-size: cover;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-right: 20px;
+        transition: all 0.2s ease-in-out;
+      }
+      .cxk_list .sort_cxk .cxk_item:hover{
+          transform: scale(1.1);
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+          background-color: #999;
+
+      }
+      .cxk_list .sort_cxk .cxk_item:last-child {
+        margin-right: 0;
+      }
+      .left_cxk{
+        position: absolute;
+        top: 50%;
+        z-index: 999;
+        left: 0;
+        transform: translate(0, -50%);
+        width: 50px;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s ease-in-out;
+
+      }
+      .left_cxk:hover{
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      .right_cxk{
+        position: absolute;
+        top: 50%;
+        z-index: 999;
+        right: 0;
+        transform: translate(0, -50%);
+        width: 50px;
+        height: 50px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.2s ease-in-out;
+      }
+      .right_cxk:hover{
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+    </style>
+  </head>
+  <body onselectstart="return false">
+    <div class="hover_btn">
+      <button class="change_bg">切换场景</button>
+      <button class="tjp_btn">停鸡坪</button>
+      <div>
+        <button onclick="location.reload()">重置</button>
+        <button class="clear_data">clear local</button>
+        <script>
+          const clear_data = document.querySelector(".clear_data");
+          clear_data.addEventListener("click", () => {
+            localStorage.clear();
+            location.reload();
+          });
+        </script>
+      </div>
+     
+    </div>
+    <div class="change_bg_box">
+      <button
+        class="close_btn"
+        onclick="changeBgBox.style.opacity = '0'; setTimeout(() => {changeBgBox.style.display = 'none';}, 300);"
+      >
+        关闭
+      </button>
+      <div class="scroll-box">
+        <div class="scene">
+          <h3 class="scene_name">偶像练习室</h3>
+          <img src="./imgs/bg/lxs.jpg" alt="" />
+        </div>
+      </div>
+    </div>
+    <div class="cxk_list">
+      <button
+        class="close_btn bgm_sotp"
+        onclick="document.querySelector('.cxk_list').style.opacity = '0'; setTimeout(() => {document.querySelector('.cxk_list').style.display = 'none';}, 300); document.querySelector('.sort_cxk').innerHTML = '';"
+      >
+        关闭
+      </button>
+      <div class="left_cxk"></div>
+      <div class="right_cxk"></div>
+      <div class="sort_cxk"></div>
+    </div>
+    <script>
+      var sort_cxk = document.querySelector(".sort_cxk");
+      const tjp_btn = document.querySelector(".tjp_btn");
+      const cxk_list = document.querySelector(".cxk_list");
+      const bgm_sotp = document.querySelector(".bgm_sotp");
+      const left_cxk = document.querySelector(".left_cxk");
+      const right_cxk = document.querySelector(".right_cxk");
+      // 点击left_cxk像左滚动
+      left_cxk.addEventListener("click", () => {
+        sort_cxk.scrollLeft -= 300;
+      });
+      // 点击right_cxk像右滚动
+      right_cxk.addEventListener("click", () => {
+        sort_cxk.scrollLeft += 300;
+      });
+      var bgm
+      tjp_btn.addEventListener("click", () => {
+        if (cxk_list.style.display === "block") {
+          bgm.pause();
+          sort_cxk.innerHTML = "";
+          cxk_list.style.opacity = "0";
+          setTimeout(() => {
+            cxk_list.style.display = "none";
+          }, 300);
+        } else {
+          bgm = new Audio("./audio/bgm.mp3");
+          bgm.volume = 0.05;
+          bgm.loop = true
+          bgm.play();
+          
+          // 读取本地存储里的cxkList
+          const cxkList = JSON.parse(localStorage.getItem("cxkList")) || [];
+          // 遍历cxkList，生成cxk_item
+          cxkList.forEach((item) => {
+            const cxk_item = document.createElement("div");
+            cxk_item.classList.add("cxk_item");
+            cxk_item.style.backgroundImage = item;
+            sort_cxk.appendChild(cxk_item);
+            cxk_item.addEventListener("click", function () {
+              const audio = new Audio(
+                `./audio/jntm/${
+                  Math.floor(Math.random() * (14 - 9 + 1)) + 9
+                }.mp3`
+              );
+              audio.play();
+            });
+          });
+          cxk_list.style.display = "block";
+          setTimeout(() => {
+            cxk_list.style.opacity = "1";
+          }, 0);
+        }
+      });
+      bgm_sotp.addEventListener("click", () => {
+        bgm.pause();
+      });
+      const changeBgBtn = document.querySelector(".change_bg");
+      const changeBgBox = document.querySelector(".change_bg_box");
+      changeBgBtn.addEventListener("click", function () {
+        if (changeBgBox.style.display === "flex") {
+          changeBgBox.style.opacity = "0";
+          setTimeout(() => {
+            changeBgBox.style.display = "none";
+          }, 300);
+        } else {
+          changeBgBox.style.display = "flex";
+          setTimeout(() => {
+            changeBgBox.style.opacity = "1";
+          }, 0);
+        }
+      });
+      const scenes = document.querySelectorAll(".scene");
+      scenes.forEach((scene) => {
+        scene.addEventListener("click", function () {
+          const imgSrc = this.querySelector("img").getAttribute("src");
+          document.querySelector(
+            ".box"
+          ).style.backgroundImage = `url('${imgSrc}')`;
+          localStorage.setItem("backgroundImage", `url('${imgSrc}')`);
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const backgroundImage = localStorage.getItem("backgroundImage");
+        if (backgroundImage) {
+          document.querySelector(".box").style.backgroundImage =
+            backgroundImage;
+        }
+      });
+    </script>
+
+    <div class="box"></div>
+    <script>
+      // 添加元素
+      const addElement = (num, type) => {
+        let positions = [];
+        for (let i = 0; i < num; i++) {
+          const element = document.createElement("div");
+          const width = type === "chicken" ? 150 : 80;
+          element.style.width = `${width}px`;
+          element.style.height = `${width}px`;
+          if (type === "chicken") {
+            element.style.backgroundImage = `url('./imgs/ji/${
+              Math.floor(Math.random() * 3) + 1
+            }.gif')`;
+          }
+          if (type === "basketball") {
+            element.style.backgroundImage = `url('./imgs/ball/${
+              Math.floor(Math.random() * 4) + 1
+            }.png')`;
+          }
+          element.classList.add(type);
+          let top = Math.floor(
+            Math.random() *
+              (document.querySelector(".box").offsetHeight - width)
+          );
+          let left = Math.floor(
+            Math.random() * (document.querySelector(".box").offsetWidth - width)
+          );
+          while (
+            positions.some(
+              (pos) =>
+                Math.abs(pos.top - top) < width &&
+                Math.abs(pos.left - left) < width
+            )
+          ) {
+            top = Math.floor(
+              Math.random() *
+                (document.querySelector(".box").offsetHeight - width)
+            );
+            left = Math.floor(
+              Math.random() *
+                (document.querySelector(".box").offsetWidth - width)
+            );
+          }
+          positions.push({ top, left });
+          element.style.top = top + "px";
+          element.style.left = left + "px";
+          document.querySelector(".box").appendChild(element);
+          // 鼠标按下事件
+          element.addEventListener("mousedown", function (e) {
+            let shiftY = e.clientY - element.getBoundingClientRect().top;
+            let shiftX = e.clientX - element.getBoundingClientRect().left;
+            element.style.position = "absolute";
+            document.body.appendChild(element);
+            moveAt(e.pageX, e.pageY);
+            // 鼠标移动事件
+            function moveAt(pageX, pageY) {
+              let left = pageX - shiftX;
+              let top = pageY - shiftY;
+              if (left < 0) {
+                left = 0;
+              } else if (
+                left >
+                document.querySelector(".box").offsetWidth - element.offsetWidth
+              ) {
+                left =
+                  document.querySelector(".box").offsetWidth -
+                  element.offsetWidth;
+              }
+              if (top < 0) {
+                top = 0;
+              } else if (
+                top >
+                document.querySelector(".box").offsetHeight -
+                  element.offsetHeight
+              ) {
+                top =
+                  document.querySelector(".box").offsetHeight -
+                  element.offsetHeight;
+              }
+              element.style.left = `${left}px`;
+              element.style.top = `${top}px`;
+            }
+            // 鼠标移动事件
+            function onMouseMove(event) {
+              moveAt(event.pageX, event.pageY);
+            }
+            document.addEventListener("mousemove", onMouseMove);
+            // 鼠标松开事件
+            element.addEventListener("mouseup", function () {
+              document.removeEventListener("mousemove", onMouseMove);
+              element.removeEventListener("mouseup", arguments.callee);
+              console.log("停止拖拽");
+              if (type === "chicken") {
+                let basketballs = document.querySelectorAll(".basketball");
+                let chickenRect = element.getBoundingClientRect();
+                for (let i = 0; i < basketballs.length; i++) {
+                  let basketballRect = basketballs[i].getBoundingClientRect();
+                  if (
+                    chickenRect.left < basketballRect.right &&
+                    chickenRect.right > basketballRect.left &&
+                    chickenRect.top < basketballRect.bottom &&
+                    chickenRect.bottom > basketballRect.top
+                  ) {
+                    console.log("鸡碰到了篮球");
+                    element.remove();
+                    basketballs[i].remove();
+                    createCxkBox(chickenRect.left, chickenRect.top);
+                  }
+                }
+              } else if (type === "basketball") {
+                let chickens = document.querySelectorAll(".chicken");
+                let basketballRect = element.getBoundingClientRect();
+                for (let i = 0; i < chickens.length; i++) {
+                  let chickenRect = chickens[i].getBoundingClientRect();
+                  if (
+                    chickenRect.left < basketballRect.right &&
+                    chickenRect.right > basketballRect.left &&
+                    chickenRect.top < basketballRect.bottom &&
+                    chickenRect.bottom > basketballRect.top
+                  ) {
+                    console.log("篮球碰到了鸡");
+                    element.remove();
+                    chickens[i].remove();
+                    createCxkBox(basketballRect.left, basketballRect.top);
+                  }
+                }
+              }
+            });
+          });
+        }
+      };
+      // 创建cxkbox
+      const createCxkBox = (x, y) => {
+        x = x - 50;
+        y = y - 80;
+        const cxkBox = document.createElement("div");
+        cxkBox.classList.add("cxkbox");
+        cxkBox.style.top = y + "px";
+        cxkBox.style.left = x + "px";
+        cxkBox.style.cursor = "move";
+        document.querySelector(".box").appendChild(cxkBox);
+        // 背景图先是烟雾
+        cxkBox.style.backgroundImage = `url('./imgs/smoke/${
+          Math.floor(Math.random() * 5) + 1
+        }.gif')`;
+        // 1秒后变成cxk
+        setTimeout(() => {
+          var mp3;
+          // 播放音效
+          if (count_mp3 == 0) {
+            var mp3 = new Audio("./audio/ngm/" + 3 + ".mp3");
+          } else if (count_mp3 == 1) {
+            var mp3 = new Audio("./audio/ngm/" + 5 + ".mp3");
+          } else if (count_mp3 == 2) {
+            var mp3 = new Audio("./audio/ngm/" + 1 + ".mp3");
+          } else {
+            var mp3 = new Audio(
+              "./audio/ngm/" + Math.floor(Math.random() * 8 + 1) + ".mp3"
+            );
+          }
+          count_mp3++;
+          mp3.play();
+          cxkBox.style.backgroundImage = `url('./imgs/cxk/${
+            Math.floor(Math.random() * 15) + 1
+          }.gif')`;
+
+          if (!localStorage.getItem("cxkList")) {
+            localStorage.setItem("cxkList", JSON.stringify([]));
+          }
+          let cxkListArr = JSON.parse(localStorage.getItem("cxkList"));
+          if (!cxkListArr.includes(cxkBox.style.backgroundImage)) {
+            cxkListArr.push(cxkBox.style.backgroundImage);
+            localStorage.setItem("cxkList", JSON.stringify(cxkListArr));
+          }
+        }, 1000);
+        // 鼠标按下事件
+        cxkBox.addEventListener("mousedown", function (e) {
+          let shiftX = e.clientX - cxkBox.getBoundingClientRect().left;
+          let shiftY = e.clientY - cxkBox.getBoundingClientRect().top;
+          cxkBox.style.position = "absolute";
+          document.body.appendChild(cxkBox);
+          moveAt(e.pageX, e.pageY);
+          // 鼠标移动事件
+          function moveAt(pageX, pageY) {
+            let left = pageX - shiftX;
+            let top = pageY - shiftY;
+            if (left < 0) {
+              left = 0;
+            } else if (
+              left >
+              document.querySelector(".box").offsetWidth - cxkBox.offsetWidth
+            ) {
+              left =
+                document.querySelector(".box").offsetWidth - cxkBox.offsetWidth;
+            }
+            if (top < 0) {
+              top = 0;
+            } else if (
+              top >
+              document.querySelector(".box").offsetHeight - cxkBox.offsetHeight
+            ) {
+              top =
+                document.querySelector(".box").offsetHeight -
+                cxkBox.offsetHeight;
+            }
+            if (
+              left >
+              document.querySelector(".box").offsetWidth - cxkBox.offsetWidth
+            ) {
+              left =
+                document.querySelector(".box").offsetWidth - cxkBox.offsetWidth;
+            }
+            if (
+              top >
+              document.querySelector(".box").offsetHeight - cxkBox.offsetHeight
+            ) {
+              top =
+                document.querySelector(".box").offsetHeight -
+                cxkBox.offsetHeight;
+            }
+            cxkBox.style.left = left + "px";
+            cxkBox.style.top = top + "px";
+          }
+          // 鼠标移动事件
+          function onMouseMove(event) {
+            moveAt(event.pageX, event.pageY);
+          }
+          cxkBox.addEventListener("mousemove", onMouseMove);
+          // 鼠标松开事件
+          cxkBox.addEventListener("mouseup", function () {
+            cxkBox.removeEventListener("mousemove", onMouseMove);
+            cxkBox.removeEventListener("mouseup", arguments.callee);
+            console.log("停止拖拽");
+          });
+        });
+      };
+      addElement(10, "chicken"); // 添加10个鸡
+      addElement(10, "basketball"); // 添加10个篮球
+      var count_mp3 = 0; // 控制合成次数播放的音频
+    </script>
+  </body>
+</html>
